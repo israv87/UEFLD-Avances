@@ -14,31 +14,32 @@ class User extends DB
     //funcion para comparar los datos que el usuario ingresa con la base de datos
     public function userExists($user, $pass)
     {
-        $md5pass = md5($pass);
-        $query = $this->connect()->prepare('SELECT * FROM usuarios WHERE usuario = :user AND  pass = :pass'); //consulta sql
-        $query->execute(['user' => $user, 'pass' => $md5pass]);
-        if ($query->rowCount()) {
-            return true;
+        $md5pass = md5($pass);//Convertimos la contraseña que ingresó el usuario en el formulario a un cifrado md5 para mayor seguridad
+        $query = $this->connect()->prepare('SELECT * FROM usuarios WHERE usuario = :user AND  pass = :pass'); //preparamos consulta sql
+        $query->execute(['user' => $user, 'pass' => $md5pass]); //Ejecutamos la consulta buscando en la base de datos el usuario y la contraseña que se ingresó
+        if ($query->rowCount()) {//validamos si existe un usuario
+            return true;//Existe
         } else {
-            return false;
+            return false;//No Existe
         }
     }
     //funcion para guardar los datos de los estudiantes una vez encontrados en la base de datos
     public function setUserEstudiante($user)
     {
-        $query = $this->connect()->prepare('SELECT * FROM estudiantes, usuarios where idUsuario = idUsuarios and usuario =:user');
-        $query->execute(['user' => $user]);
-        foreach ($query as $currentUser) {
+        $query = $this->connect()->prepare('SELECT * FROM estudiantes, usuarios where idUsuario = idUsuarios and usuario =:user');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos si los datos de ingreso pertenencen a un estudiante
+        foreach ($query as $currentUser) {//Si el usuario es un estudiante obtenemos sus datos
             //cada dato de la base lo guardamos en una variable
-            $this->p_nombre = $currentUser['PNombreE'];
-            $this->s_nombre = $currentUser['SNombreE'];
-            $this->p_apellido = $currentUser['ApellidoPE'];
-            $this->m_apellido = $currentUser['ApellidoME'];
-            $this->username = $currentUser['Usuario'];
-            $this->u_rol = $currentUser['Rol'];
+            $this->p_nombre = $currentUser['PNombreE']; //primer nombre
+            $this->s_nombre = $currentUser['SNombreE']; //segundo nombre
+            $this->p_apellido = $currentUser['ApellidoPE']; //primer apellido
+            $this->m_apellido = $currentUser['ApellidoME']; //primer apellido
+            $this->username = $currentUser['Usuario']; //nombre del usuario
+            $this->u_rol = $currentUser['Rol']; //rol de estudiante
         }
     }
     //funcion para guardar los datos de los docentes una vez encontrados en la base de datos
+    //Se hace una consulta igual a la anterior pero ahora para un docente
     public function setUserDocente($user)
     {
         $query = $this->connect()->prepare('SELECT * FROM Docente, usuarios where idUsuarioD = idUsuarios and usuario =:user');
@@ -54,25 +55,25 @@ class User extends DB
         }
     }
     //funciones que nos sirven para presentar los datos guardados en los modulos
-    public function getPNombre()
+    public function getPNombre()//obtener el primer nombre de un docete o un estudiante
     {
-        return $this->p_nombre;
+        return $this->p_nombre; //Se guarda la variable obtenida
     }
-    public function getSNombre()
+    public function getSNombre()//obtener el segundo nombre de un docete o un estudiante
     {
-        return $this->s_nombre;
+        return $this->s_nombre; //Se guarda la variable obtenida
     }
-    public function getPApellido()
+    public function getPApellido()//obtener el apellido paterno de un docete o un estudiante
     {
-        return $this->p_apellido;
+        return $this->p_apellido;//Se guarda la variable obtenida
     }
-    public function getMApellido()
+    public function getMApellido()//obtener el apellido materno de un docete o un estudiante
     {
-        return $this->m_apellido;
+        return $this->m_apellido;//Se guarda la variable obtenida
     }
-    public function getRol()
+    public function getRol()//obtener el rol de un docete o un estudiante
     {
-        return $this->u_rol;
+        return $this->u_rol;//Se guarda la variable obtenida
     }
     //------------------------ SQL ESTUDIANTES ------------------------------------
     /*Establecemos todas las funciones y consultas a la base de datos
@@ -96,13 +97,13 @@ class User extends DB
     private $idAvanceOE;
     //Funciones(Consultas SQL)
     //CONSULTAS SELECT
-    public function SetResumen1($user)
+    public function SetResumen1($user)//Función para obtener el docente, paralelo y proyecto al que pertenece el estudiante
     {
-        $query = $this->connect()->prepare('SELECT concat(PNombreD," ",ApellidoPD) as "docente",Proyecto, Paralelo
+        $query = $this->connect()->prepare("SELECT concat(PNombreD,' ',ApellidoPD) as 'docente',Proyecto, Paralelo
                                             FROM estudiantes, docente, listaestudiantes, proyecto, usuarios
                                             WHERE fkEstudiantes = CodEst and fkDocente = Cod_docente and fkProyectoe = id_proyecto
-                                            and idUsuario = idUsuarios and Usuario =:user');
-        $query->execute(['user' => $user]);
+                                            and idUsuario = idUsuarios and Usuario =:user");//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->paraleloE = $currentUser['Paralelo'];
             $this->profesorE = $currentUser['docente'];
@@ -112,17 +113,17 @@ class User extends DB
     public function SetInformesE($user)
     {
         $query = $this->connect()->prepare('SELECT count(idAvance) as avances FROM avances, estudiantes, usuarios
-                                         WHERE idEstudiante = CodEst and idUsuario = idUsuarios and Usuario=:user');
-        $query->execute(['user' => $user]);
+                                         WHERE idEstudiante = CodEst and idUsuario = idUsuarios and Usuario=:user');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->informesE = $currentUser['avances'];
         }
     }
     public function SetObservacionesE($user)
     {
-        $query = $this->connect()->prepare('SELECT count(Estado) as estado FROM avances, estudiantes, usuarios
-                                       WHERE  estado ="Revisado" and idEstudiante = CodEst and idUsuario = idUsuarios and Usuario=:user');
-        $query->execute(['user' => $user]);
+        $query = $this->connect()->prepare("SELECT count(Estado) as estado FROM avances, estudiantes, usuarios
+                                       WHERE  estado ='Revisado' and idEstudiante = CodEst and idUsuario = idUsuarios and Usuario=:user");//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->observacionesE = $currentUser['estado'];
         }
@@ -130,8 +131,8 @@ class User extends DB
     public function SetCalificacionesE($user)
     {
         $query = $this->connect()->prepare('SELECT count(idCalificacion) as calificacion FROM calificaciones, estudiantes, usuarios
-                                         WHERE idEstudianteC = CodEst and idUsuario = idUsuarios and Usuario=:user');
-        $query->execute(['user' => $user]);
+                                         WHERE idEstudianteC = CodEst and idUsuario = idUsuarios and Usuario=:user');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->calificacionesE = $currentUser['calificacion'];
         }
@@ -139,8 +140,8 @@ class User extends DB
     public function AvancesResumen($user)
     {
         $query1 = $this->connect()->prepare('SELECT * FROM avances, usuarios, estudiantes
-                                        WHERE idEstudiante = CodEst and idUsuario = idUsuarios and usuario =:user');
-        $query1->execute(['user' => $user]);
+                                        WHERE idEstudiante = CodEst and idUsuario = idUsuarios and usuario =:user'); //preparamos consulta sql
+        $query1->execute(['user' => $user]); //Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         echo ' <table class="table table-striped table-responsive ">
                     <thead>
                         <tr>
@@ -153,6 +154,7 @@ class User extends DB
                     </thead>
                     <tbody>';
         foreach ($query1 as $currentUser) {
+            $idAvance= $currentUser['idAvance'];
             $estadoE = $currentUser['Estado'];
             if ($estadoE == "Revisado") {
                 $estadofE = '<span class="label label-success">Revisado</span>';
@@ -163,7 +165,7 @@ class User extends DB
                 <tr>
                     <td>' . $currentUser['Fecha'] . '</td>
                     <td>' . $currentUser['Titulo'] . '</td>
-                    <td> <a href="Database/Download.php" target="_blank"><img src="assets/img/pdf.png"></a> </td>
+                    <td> <a href="Database/Download.php?idAv='.$idAvance.'" target="_blank"><img src="assets/img/pdf.png"></a> </td>
                     <td>' . $estadofE . '</td>
                     <td>' . $currentUser['NotaTotal'] . '</td> 
                 </tr> 
@@ -176,9 +178,9 @@ class User extends DB
     public function CalificacionesEstudiante($user)
     {
         $query1 = $this->connect()->prepare('SELECT * FROM avances, usuarios, estudiantes
-        WHERE idEstudiante = CodEst and idUsuario = idUsuarios and usuario =:user');
+        WHERE idEstudiante = CodEst and idUsuario = idUsuarios and usuario =:user');//preparamos consulta sql
 
-            $query1->execute(['user' => $user]);
+            $query1->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
             echo ' 
             <table id="tabla_rev" class="display table table-striped table-bordered" style="width:100%">
             <thead>
@@ -197,13 +199,13 @@ class User extends DB
                 $idAvance = $currentUser['idAvance'];
 
             $query3 = $this->connect()->prepare("SELECT  * FROM criterios, docente, usuarios
-            WHERE idDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario=:user");
-            $query3->execute(['user' => $user]);
-            $query2 = $this->connect()->prepare("SELECT  * FROM observaciones Where idAvanceFKO =$idAvance");
-            $query2->execute();
+            WHERE idDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario=:user");//preparamos consulta sql
+            $query3->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
+            $query2 = $this->connect()->prepare("SELECT  * FROM observaciones Where idAvanceFKO =$idAvance");//preparamos consulta sql
+            $query2->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
-            $query4 = $this->connect()->prepare("SELECT  * FROM notas Where idAvanceFKN =$idAvance");
-            $query4->execute();
+            $query4 = $this->connect()->prepare("SELECT  * FROM notas Where idAvanceFKN =$idAvance");//preparamos consulta sql
+            $query4->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
             $EstadoD = $currentUser['Estado'];
             if ($EstadoD == "Revisado") {
@@ -216,7 +218,7 @@ class User extends DB
             <tr>
             <td>' . $currentUser['Fecha'] . '</td>
             <td>' . $currentUser['Titulo'] . '</td>
-            <td> <a href="Database/Download.php" target="_blank"><img src="assets/img/pdf.png"></a> </td>
+            <td> <a href="Database/Download.php?filename=<?php echo'.$currentUser['nombreArchivo'].';?>" target="_blank"><img src="assets/img/pdf.png"></a> </td>
             <td>' . $estadofD . '</td>
             <td>' . $currentUser['NotaTotal'] . '</td> 
             <td>
@@ -355,8 +357,8 @@ para los usuarios que ingresen al modulo docentes*/
     public function ParaleloDocente($user)
     {
         $query = $this->connect()->prepare('SELECT distinct Paralelo FROM estudiantes, docente, usuarios, listaestudiantes 
-                            WHERE fkEstudiantes = CodEst and fkDocente = Cod_docente and idUsuarioD = idUsuarios and Usuario=:user');
-        $query->execute(['user' => $user]);
+                            WHERE fkEstudiantes = CodEst and fkDocente = Cod_docente and idUsuarioD = idUsuarios and Usuario=:user');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             echo '
                         <p style="display: inline-block">' . $currentUser['Paralelo'] . ',</p>';
@@ -364,18 +366,18 @@ para los usuarios que ingresen al modulo docentes*/
     }
     public function SetCriteriosD($user)
     {
-        $query = $this->connect()->prepare('SELECT count(idCriterio) as"criterio" FROM criterios, docente, usuarios 
-                                    where idDocente = Cod_docente and idUsuarioD = idUsuarios and Usuario =:user');
-        $query->execute(['user' => $user]);
+        $query = $this->connect()->prepare("SELECT count(idCriterio) as'criterio' FROM criterios, docente, usuarios 
+                                    where idDocente = Cod_docente and idUsuarioD = idUsuarios and Usuario =:user");//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->criteriosD = $currentUser['criterio'];
         }
     }
     public function SetNEstudiantesD($user)
     {
-        $query = $this->connect()->prepare('SELECT count(idListaEstudiantes) as "Nro" FROM listaestudiantes, docente, usuarios 
-                                        WHERE fkDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario =:user');
-        $query->execute(['user' => $user]);
+        $query = $this->connect()->prepare("SELECT count(idListaEstudiantes) as 'Nro' FROM listaestudiantes, docente, usuarios 
+                                        WHERE fkDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario =:user");//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->NestudiantesD = $currentUser['Nro'];
         }
@@ -385,8 +387,8 @@ para los usuarios que ingresen al modulo docentes*/
         $query = $this->connect()->prepare('SELECT count(idAvance) as "avances" FROM avances, listaestudiantes
                                         WHERE estado ="Esperando Revision" and fkEstudiantes = idEstudiante 
                                         and fkDocente = (select Cod_docente  FROM docente, usuarios 
-                                        where idUsuarioD = idUsuarios and Usuario=:user) ');
-        $query->execute(['user' => $user]);
+                                        where idUsuarioD = idUsuarios and Usuario=:user) ');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->NavancesD = $currentUser['avances'];
         }
@@ -396,8 +398,8 @@ para los usuarios que ingresen al modulo docentes*/
         $query = $this->connect()->prepare('SELECT count(idAvance) as "avancesR" FROM avances, listaestudiantes
                                         WHERE estado ="Revisado" and fkEstudiantes = idEstudiante 
                                         and fkDocente = (select Cod_docente  FROM docente, usuarios 
-                                        where idUsuarioD = idUsuarios and Usuario=:user) ');
-        $query->execute(['user' => $user]);
+                                        where idUsuarioD = idUsuarios and Usuario=:user) ');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->NavancesRevisadosD = $currentUser['avancesR'];
         }
@@ -407,8 +409,8 @@ para los usuarios que ingresen al modulo docentes*/
                 $query = $this->connect()->prepare('SELECT count(idAvance) as "avancesR" FROM avances, listaestudiantes
                 WHERE estado ="Revisado" and fkEstudiantes = idEstudiante 
                 and fkDocente = (select Cod_docente  FROM docente, usuarios 
-                where idUsuarioD = idUsuarios and Usuario=:user) ');
-        $query->execute(['user' => $user]);
+                where idUsuarioD = idUsuarios and Usuario=:user) ');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
         $this->NavancesRevisadosD = $currentUser['avancesR'];
         }
@@ -416,21 +418,21 @@ para los usuarios que ingresen al modulo docentes*/
     public function SetNCalificacionesD($user)
     {
         $query = $this->connect()->prepare("SELECT count(Titulo) as 'calificaciones' from avances, estudiantes, listaestudiantes, docente, usuarios
-        where idEstudiante = CodEst and fkEstudiantes = CodEst and fkDocente = Cod_docente and idUsuarioD = idUsuarios and Estado ='Revisado' and usuario =:user ");
-        $query->execute(['user' => $user]);
+        where idEstudiante = CodEst and fkEstudiantes = CodEst and fkDocente = Cod_docente and idUsuarioD = idUsuarios and Estado ='Revisado' and usuario =:user ");//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         foreach ($query as $currentUser) {
             $this->NcaliD = $currentUser['calificaciones'];
         }
     }
     public function AvancesD($user)
     {
-        $query1 = $this->connect()->prepare('SELECT concat(ApellidoPE," ", PNombreE," ", SNombreE) as "nombre" ,idAvance, Titulo, Estado, Fecha
+        $query1 = $this->connect()->prepare("SELECT concat(ApellidoPE,' ', PNombreE,' ', SNombreE) as 'nombre' ,idAvance, Titulo, Estado, Fecha
                                         FROM avances, estudiantes, listaestudiantes
                                         WHERE idEstudiante = CodEst and fkEstudiantes =CodEst 
                                         and fkDocente = (select Cod_docente  FROM docente, usuarios 
                                         where idUsuarioD = idUsuarios and Usuario=:user)
-                                        ORDER BY Fecha DESC');
-        $query1->execute(['user' => $user]);
+                                        ORDER BY Fecha DESC");//preparamos consulta sql
+        $query1->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         echo ' 
                 <table id="tabla_resumen2" class="display table table-striped table-bordered" style="width:100%">
                     <thead>
@@ -467,13 +469,13 @@ para los usuarios que ingresen al modulo docentes*/
     }
     public function RevisionD($user)
     {
-        $query1 = $this->connect()->prepare('SELECT concat(ApellidoPE," ", PNombreE," ", SNombreE) as"nombre" ,idAvance, Titulo, Estado, Fecha, NotaTotal,idEstudiante
+        $query1 = $this->connect()->prepare("SELECT concat(ApellidoPE,' ', PNombreE,' ', SNombreE) as'nombre' ,idAvance, Titulo, Estado, Fecha, NotaTotal,idEstudiante
                                         FROM avances, estudiantes, listaestudiantes
                                         WHERE idEstudiante = CodEst and fkEstudiantes =CodEst 
                                         and fkDocente = (select Cod_docente  FROM docente, usuarios 
                                         where idUsuarioD = idUsuarios and Usuario=:user)
-                                        ORDER BY Fecha DESC');
-        $query1->execute(['user' => $user]);
+                                        ORDER BY Fecha DESC");//preparamos consulta sql
+        $query1->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         echo ' 
                 <table id="tabla_rev" class="display table table-striped table-bordered" style="width:100%">
                     <thead>
@@ -494,14 +496,14 @@ para los usuarios que ingresen al modulo docentes*/
             $idEstudiante = $currentUser['idEstudiante'];
            
             $query3 = $this->connect()->prepare("SELECT  * FROM criterios, docente, usuarios
-            WHERE idDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario=:user");
-            $query3->execute(['user' => $user]);
+            WHERE idDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario=:user");//preparamos consulta sql
+            $query3->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
 
-            $query2 = $this->connect()->prepare("SELECT  * FROM observaciones Where idAvanceFKO =$idAvance");
-            $query2->execute();
+            $query2 = $this->connect()->prepare("SELECT  * FROM observaciones Where idAvanceFKO =$idAvance");//preparamos consulta sql
+            $query2->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
-            $query4 = $this->connect()->prepare("SELECT  * FROM notas Where idAvanceFKN =$idAvance");
-            $query4->execute();
+            $query4 = $this->connect()->prepare("SELECT  * FROM notas Where idAvanceFKN =$idAvance");//preparamos consulta sql
+            $query4->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
             $EstadoD = $currentUser['Estado'];
             if ($EstadoD == "Revisado") {
@@ -644,8 +646,8 @@ para los usuarios que ingresen al modulo docentes*/
     public function CalifiacionD($user)
     {
         $query = $this->connect()->prepare('SELECT distinct paralelo,curso FROM estudiantes, listaestudiantes , docente, usuarios
-        WHERE CodEst = fkEstudiantes and fkDocente = Cod_docente and idUsuarioD = idUsuarios and Usuario=:user ;');
-        $query->execute(['user' => $user]);
+        WHERE CodEst = fkEstudiantes and fkDocente = Cod_docente and idUsuarioD = idUsuarios and Usuario=:user ;');//preparamos consulta sql
+        $query->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         echo'
         
         ';
@@ -655,8 +657,8 @@ para los usuarios que ingresen al modulo docentes*/
             $clista = $currentUser['curso'];
 
             $query1 = $this->connect()->prepare("SELECT CodEst, concat(ApellidoPE,' ',ApellidoME,' ',PNombreE,' ',SNombreE) as 'estudiante', 
-            paralelo,curso, Calificacion FROM estudiantes, calificaciones where idEstudianteC = CodEst and Paralelo ='".$plista."'");
-            $query1->execute();
+            paralelo,curso, Calificacion FROM estudiantes, calificaciones where idEstudianteC = CodEst and Paralelo ='".$plista."'");//preparamos consulta sql
+            $query1->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
             
         echo '
         
@@ -677,14 +679,14 @@ para los usuarios que ingresen al modulo docentes*/
                         <tbody>
         ';   foreach ($query1 as $currentUser) {
             $CodEst = $currentUser['CodEst'];
-            $query2 = $this->connect()->prepare("SELECT * FROM avances where idEstudiante = '$CodEst'");
-            $query2->execute();
+            $query2 = $this->connect()->prepare("SELECT * FROM avances where idEstudiante = '$CodEst'");//preparamos consulta sql
+            $query2->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
-            $query3 = $this->connect()->prepare("SELECT * FROM avances where idEstudiante = '$CodEst'");
-            $query3->execute();
+            $query3 = $this->connect()->prepare("SELECT * FROM avances where idEstudiante = '$CodEst'");//preparamos consulta sql
+            $query3->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
-            $query4 = $this->connect()->prepare("SELECT * FROM avances where idEstudiante = '$CodEst'");
-            $query4->execute();
+            $query4 = $this->connect()->prepare("SELECT * FROM avances where idEstudiante = '$CodEst'");//preparamos consulta sql
+            $query4->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
 
             echo'
@@ -795,8 +797,8 @@ para los usuarios que ingresen al modulo docentes*/
     public function MostrarCriteriosD($user)
     {
         $query1 = $this->connect()->prepare('SELECT idCriterio, Criterio, Descripcion, Porcentaje FROM criterios, docente, usuarios
-                                             WHERE idDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario=:user');
-        $query1->execute(['user' => $user]);
+                                             WHERE idDocente=Cod_docente and idUsuarioD = idUsuarios and Usuario=:user');//preparamos consulta sql
+        $query1->execute(['user' => $user]);//Ejecutamos la consulta buscando en la base de datos siempre comparando con el usuario que ingresó en el login
         
         echo ' 
             <table id="tabla_criterios" class="display table table-striped table-bordered" style="width:100%">

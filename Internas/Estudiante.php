@@ -183,7 +183,6 @@ $user->SetCalificacionesE($userSession->getCurrentUser()); //Califiaciones
                                                     $user->UpdateAvanceEst($userSession->getCurrentUser());
                                         }
                                             ?>   
-
                                                 <form class="form-horizontal" method="post" action="" enctype="multipart/form-data" >
                                                         <legend>Avance Monográfico</legend>
                                                         <div class="row">
