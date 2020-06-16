@@ -46,7 +46,7 @@ $sth6->execute();
 foreach ($sth6 as $currentUser) {   
 $promedio = $currentUser['promedio'];
 
-$sth7 = $objData->prepare("UPDATE Calificaciones SET Calificacion = :promedio where idEstudianteC =:idEst");     
+$sth7 = $objData->prepare("UPDATE calificaciones SET Calificacion = :promedio where idEstudianteC =:idEst");     
 $sth7->bindParam(':idEst', $idEstudiante);    
 $sth7->bindParam(':promedio', $promedio );  
 $sth7->execute(); 

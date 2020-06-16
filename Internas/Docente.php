@@ -81,14 +81,6 @@ $user->SetNCalificacionesD($userSession->getCurrentUser()); //Numero de califica
                         <div class="col-md-12">
                             <div class="header-rightside">
                                 <ul class="list-inline header-top pull-right">
-
-
-                                    <li>
-                                        <a href="#" class="icon-info">
-                                            <i class="fa fa-bell" aria-hidden="true" style="color:white"></i>
-
-                                        </a>
-                                    </li>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="assets/img/teacher.png" alt="user">
                                             <b class="caret"></b></a>
@@ -96,11 +88,6 @@ $user->SetNCalificacionesD($userSession->getCurrentUser()); //Numero de califica
                                             <li>
                                                 <div class="navbar-content">
                                                     <span><?php echo $user->getPNombre() . ' ' . $user->getPApellido() ?></span>
-
-                                                    <div class="divider">
-                                                    </div>
-                                                    <a href="#" data-toggle="modal" data-target="#add_project">Editar perfil</a>
-
                                                 </div>
                                             </li>
                                             <div class="navbar-content">
@@ -157,158 +144,158 @@ $user->SetNCalificacionesD($userSession->getCurrentUser()); //Numero de califica
                             <div class="bs-callout bs-callout-danger ">
                                 <h4>Ultimas Entradas</h4>
                                 <?php $user->AvancesD($userSession->getCurrentUser()); ?>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="avz" style="display: none">
-    <div class="user-dashboard">
-        <div class="panel panel-default">
-            <div class="bs-callout bs-callout-danger">
-                <h4>Avances Monográficos</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="avz" style="display: none">
+                    <div class="user-dashboard">
+                        <div class="panel panel-default">
+                            <div class="bs-callout bs-callout-danger">
+                                <h4>Avances Monográficos</h4>
 
                                 <?php $user->RevisionD($userSession->getCurrentUser()); ?>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="cri" style="display: none">
-    <div class="user-dashboard">
-        <div class="panel-group">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse1">Nuevo criterio para evaluación</a>
-                    </h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="collapse1" class="panel-collapse collapse">
-                    <ul class="list-group">
-                        <li class="list-group-item">
+                <div id="cri" style="display: none">
+                    <div class="user-dashboard">
+                        <div class="panel-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" href="#collapse1">Nuevo criterio para evaluación</a>
+                                    </h4>
+                                </div>
+                                <div id="collapse1" class="panel-collapse collapse">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
 
-                            <form class="form-horizontal" action="Database/SQL/InsertCriterio.php" method="post">
-                                    <legend>Critero para evaluación</legend>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="Titulo" class="control-label ">Nombre del
-                                                    criterio</label>
+                                            <form class="form-horizontal" action="Database/SQL/InsertCriterio.php" method="post">
+                                                <legend>Critero para evaluación</legend>
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label for="Titulo" class="control-label ">Nombre del
+                                                                criterio</label>
 
-                                                <input type="text" class="form-control" id="criterio"name="criterio" placeholder="Criterio">
-                                            </div>
-                                            
-                                            <div class="col-sm-2">
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <!-- File Button http://getbootstrap.com/css/#forms -->
-                                                <div class="form-group">
-                                                    <label for="Titulo" class="control-label ">Porcentaje</label>
+                                                            <input type="text" class="form-control" id="criterio" name="criterio" placeholder="Criterio">
+                                                        </div>
 
-                                                    <input type="text" class="form-control" name="porcentaje" id="porcentaje" placeholder="%">
+                                                        <div class="col-sm-2">
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <!-- File Button http://getbootstrap.com/css/#forms -->
+                                                            <div class="form-group">
+                                                                <label for="Titulo" class="control-label ">Porcentaje</label>
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-1"></div>
-                                        <div class="col-sm-5">
-                                            <!-- Textarea http://getbootstrap.com/css/#textarea -->
-                                            <div class="form-group">
-                                                <label class="control-label " for="desc">Descripción</label>
+                                                                <input type="text" class="form-control" name="porcentaje" id="porcentaje" placeholder="%">
 
-                                                <textarea class="form-control" id="desc" name="descripcion" rows=2"></textarea>
-                                                <p class="help-block">Descripción del criterio ....
-                                                </p>
-                                            </div>
-                                            <!-- Button Group http://getbootstrap.com/components/#btn-groups -->
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2"></label>
-                                                <div class="text-center col-sm-10">
-                                                    <div id="LimpiarGroup" class="btn-group" role="group" aria-label="">
-                                                        <button type="button" id="Limpiar" name="Limpiar" class="btn btn-warning" aria-label="limpiar">Limpiar</button>
-                                                        <button type="submit" id="Guardar" name="Guardar" class="btn btn-primary" aria-label="limpiar">Guardar</button>
+                                                            </div>
+                                                        </div>
                                                     </div>
+                                                    <div class="col-sm-1"></div>
+                                                    <div class="col-sm-5">
+                                                        <!-- Textarea http://getbootstrap.com/css/#textarea -->
+                                                        <div class="form-group">
+                                                            <label class="control-label " for="desc">Descripción</label>
 
+                                                            <textarea class="form-control" id="desc" name="descripcion" rows=2"></textarea>
+                                                            <p class="help-block">Descripción del criterio ....
+                                                            </p>
+                                                        </div>
+                                                        <!-- Button Group http://getbootstrap.com/components/#btn-groups -->
+                                                        <div class="form-group">
+                                                            <label class="control-label col-sm-2"></label>
+                                                            <div class="text-center col-sm-10">
+                                                                <div id="LimpiarGroup" class="btn-group" role="group" aria-label="">
+                                                                    <button type="button" id="Limpiar" name="Limpiar" class="btn btn-warning" aria-label="limpiar">Limpiar</button>
+                                                                    <button type="submit" id="Guardar" name="Guardar" class="btn btn-primary" aria-label="limpiar">Guardar</button>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </form>
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+                                <div class="bs-callout bs-callout-danger" style="padding-left:1em;">
+                                    <h4>Criterios Establecitos</h4>
+                                    <?php $user->MostrarCriteriosD($userSession->getCurrentUser()); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="cali" style="display: none">
+                    <div class="user-dashboard">
+                        <div class="panel panel-default">
+                            <div class="bs-callout bs-callout-danger">
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h4>Paralelos</h4>
                                     </div>
-                            </form>
-                        </li>
+                                    <div class="col-sm-12">
+                                        <?php $user->CalifiacionD($userSession->getCurrentUser()); ?>
+                                    </div>
+                                </div>
 
-                    </ul>
-
-                </div>
-                <div class="bs-callout bs-callout-danger" style="padding-left:1em;">
-                    <h4>Criterios Establecitos</h4>
-                    <?php $user->MostrarCriteriosD($userSession->getCurrentUser()); ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
-</div>
-<div id="cali" style="display: none">
-    <div class="user-dashboard">
-        <div class="panel panel-default">
-            <div class="bs-callout bs-callout-danger">
-               
-                <div class="row">
-                    <div class="col-sm-12">
-                    <h4>Paralelos</h4>
-                    </div>
-                    <div class="col-sm-12">
-                    <?php $user->CalifiacionD($userSession->getCurrentUser()); ?>
-                    </div>
-                </div>
-            
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-</div>
-<script>
-    $(document).ready(function() {
-        $('#tabla_resumen2').DataTable({
-            "scrollY": "500px",
-            "scrollCollapse": true,
-            "paging": false,
-            "order": [
-                [0, 'desc']
-            ]
+    <script>
+        $(document).ready(function() {
+            $('#tabla_resumen2').DataTable({
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "paging": false,
+                "order": [
+                    [0, 'desc']
+                ]
+            });
         });
-    });
-    $(document).ready(function() {
-        $('#tabla_criterios').DataTable({
-            "scrollY": "500px",
-            "scrollCollapse": true,
-            "paging": false,
-            "order": [
-                [0, 'desc']
-            ]
+        $(document).ready(function() {
+            $('#tabla_criterios').DataTable({
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "paging": false,
+                "order": [
+                    [0, 'desc']
+                ]
+            });
         });
-    });
-    $(document).ready(function() {
-        $('#tabla_rev').DataTable({
-            "scrollY": "500px",
-            "scrollCollapse": true,
-            "paging": false,
-            "order": [
-                [0, 'desc']
-            ]
+        $(document).ready(function() {
+            $('#tabla_rev').DataTable({
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "paging": false,
+                "order": [
+                    [0, 'desc']
+                ]
+            });
         });
-    });
-    $(document).ready(function() {
-        $('#tabla_cali').DataTable({
-            "scrollY": "500px",
-            "scrollCollapse": true,
-            "paging": false,
-            "order": [
-                [0, 'desc']
-            ]
+        $(document).ready(function() {
+            $('#tabla_cali').DataTable({
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "paging": false,
+                "order": [
+                    [0, 'desc']
+                ]
+            });
         });
-    });
-</script>
+    </script>
 
 </body>
 

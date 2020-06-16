@@ -165,7 +165,7 @@ class User extends DB
                 <tr>
                     <td>' . $currentUser['Fecha'] . '</td>
                     <td>' . $currentUser['Titulo'] . '</td>
-                    <td> <a href="Database/Download.php?idAv='.$idAvance.'" target="_blank"><img src="assets/img/pdf.png"></a> </td>
+                    <td> <a href="Database/SQL/Download.php?idAv='.$idAvance.'"target="_blank"><img src="assets/img/pdf.png"></a> </td>
                     <td>' . $estadofE . '</td>
                     <td>' . $currentUser['NotaTotal'] . '</td> 
                 </tr> 
@@ -207,6 +207,7 @@ class User extends DB
             $query4 = $this->connect()->prepare("SELECT  * FROM notas Where idAvanceFKN =$idAvance");//preparamos consulta sql
             $query4->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
+           
             $EstadoD = $currentUser['Estado'];
             if ($EstadoD == "Revisado") {
             $estadofD = '<span class="label label-success">Revisado</span>';
@@ -218,7 +219,7 @@ class User extends DB
             <tr>
             <td>' . $currentUser['Fecha'] . '</td>
             <td>' . $currentUser['Titulo'] . '</td>
-            <td> <a href="Database/Download.php?filename=<?php echo'.$currentUser['nombreArchivo'].';?>" target="_blank"><img src="assets/img/pdf.png"></a> </td>
+            <td> <a href="Database/SQL/Download.php?idAv='.$idAvance.'"target="_blank"><img src="assets/img/pdf.png"></a> </td>
             <td>' . $estadofD . '</td>
             <td>' . $currentUser['NotaTotal'] . '</td> 
             <td>
@@ -276,8 +277,8 @@ class User extends DB
                 ';
                 }
                 echo'  
-            
-            <tbody> 
+          
+            </thead>
             </table>
             </div>
             </div>
@@ -291,7 +292,26 @@ class User extends DB
             }
             echo '
             <tbody> 
+            </table>
+            <table class="display table table-striped table-bordered" style="width:100%">
+            <thead>
+            ';
+            
+            $query5 = $this->connect()->prepare("SELECT Calificacion FROM calificaciones, estudiantes, usuarios
+            where idEstudianteC = CodEst and idUsuario = idUsuarios and Usuario =:user");//preparamos consulta sql
+            $query5->execute(['user' => $user]);//Como es una consulta general y no comapramos con un usuario la execute() va vacío
+            foreach ($query5 as $currentUser) { 
+                $cali = $currentUser['Calificacion'];
+                echo'
+            <tr>
+            <th>Nota promedio de avances entregados: '.$cali.'</th>
+            </tr>
+                ';
+            }
+            echo'
+            <tbody> 
             </table>';
+           
     }
     public function UpdateAvanceEst($user)
     {
@@ -301,11 +321,8 @@ class User extends DB
                                                  WHERE idUsuario = idUsuarios and Usuario =:user )
                                              WHERE idAvance = (SELECT max(idAvance) FROM avances)');
         $query1->execute(['user' => $user]);
-       
-       
-        
-       
     }
+   
     //Funciones get para presentar en la aplciación
     public function getParaleloE()
     {
@@ -426,7 +443,7 @@ para los usuarios que ingresen al modulo docentes*/
     }
     public function AvancesD($user)
     {
-        $query1 = $this->connect()->prepare("SELECT concat(ApellidoPE,' ', PNombreE,' ', SNombreE) as 'nombre' ,idAvance, Titulo, Estado, Fecha
+        $query1 = $this->connect()->prepare("SELECT concat(ApellidoPE,' ', PNombreE,' ', SNombreE) as 'nombre' ,idAvance,Descripcion, Titulo, Estado, Fecha
                                         FROM avances, estudiantes, listaestudiantes
                                         WHERE idEstudiante = CodEst and fkEstudiantes =CodEst 
                                         and fkDocente = (select Cod_docente  FROM docente, usuarios 
@@ -440,12 +457,14 @@ para los usuarios que ingresen al modulo docentes*/
                         <th>Fecha</th>
                         <th>Estudiante</th>
                         <th>Informe</th>
+                        <th>Descripción</th>
                         <th>Archivo</th>
                         <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>';
         foreach ($query1 as $currentUser) {
+            $idAvance = $currentUser['idAvance'];
             $EstadoD = $currentUser['Estado'];
             if ($EstadoD == "Revisado") {
                 $estadofD = '<span class="label label-success">Revisado</span>';
@@ -457,7 +476,8 @@ para los usuarios que ingresen al modulo docentes*/
                     <td>' . $currentUser['Fecha'] . '</td>
                     <td>' . $currentUser['nombre'] . '</td>
                     <td>' . $currentUser['Titulo'] . '</td>
-                    <td> <a href="Database/Download.php" target="_blank"><img src="assets/img/pdf.png"></a> </td>
+                    <td>' . $currentUser['Descripcion'] .'</td>
+                    <td> <a href="Database/SQL/Download.php?idAv='.$idAvance.'"target="_blank"><img src="assets/img/pdf.png"></a> </td>
                     <td>' . $estadofD . '</td> 
                 </tr> 
                 ';
@@ -469,7 +489,7 @@ para los usuarios que ingresen al modulo docentes*/
     }
     public function RevisionD($user)
     {
-        $query1 = $this->connect()->prepare("SELECT concat(ApellidoPE,' ', PNombreE,' ', SNombreE) as'nombre' ,idAvance, Titulo, Estado, Fecha, NotaTotal,idEstudiante
+        $query1 = $this->connect()->prepare("SELECT concat(ApellidoPE,' ', PNombreE,' ', SNombreE) as'nombre' ,idAvance,Descripcion, Titulo, Estado, Fecha, NotaTotal,idEstudiante
                                         FROM avances, estudiantes, listaestudiantes
                                         WHERE idEstudiante = CodEst and fkEstudiantes =CodEst 
                                         and fkDocente = (select Cod_docente  FROM docente, usuarios 
@@ -483,6 +503,7 @@ para los usuarios que ingresen al modulo docentes*/
                         <th>Fecha</th>
                         <th>Estudiante</th>
                         <th>Informe</th>
+                        <th>Descripción</th>
                         <th>Archivo</th>
                         <th>Estado</th>
                         <th>Nota</th>
@@ -505,6 +526,9 @@ para los usuarios que ingresen al modulo docentes*/
             $query4 = $this->connect()->prepare("SELECT  * FROM notas Where idAvanceFKN =$idAvance");//preparamos consulta sql
             $query4->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
 
+            $query5 = $this->connect()->prepare("SELECT  * FROM criterios");//preparamos consulta sql
+            $query5->execute();//Como es una consulta general y no comapramos con un usuario la execute() va vacío
+
             $EstadoD = $currentUser['Estado'];
             if ($EstadoD == "Revisado") {
                 $estadofD = '<span class="label label-success">Revisado</span>';
@@ -517,7 +541,8 @@ para los usuarios que ingresen al modulo docentes*/
                     <td>' . $currentUser['Fecha'] . '</td>
                     <td>' . $currentUser['nombre'] . '</td>
                     <td>' . $currentUser['Titulo'] . '</td>
-                    <td> <a href="Database/Download.php" target="_blank"><img src="assets/img/pdf.png"></a> </td>
+                    <td>' . $currentUser['Descripcion'] . '</td>
+                    <td> <a href="Database/SQL/Download.php?idAv='.$idAvance.'"target="_blank"><img src="assets/img/pdf.png"></a> </td>
                     <td>' . $estadofD . '</td>
                     <td>' . $currentUser['NotaTotal'] . '</td> 
                     <td>
@@ -548,7 +573,10 @@ para los usuarios que ingresen al modulo docentes*/
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <h5>Nota:</h5>
-                                                    <input type="text" class="form-control" placeholder="Nota ..." name="nota">
+                                                    <input type="number" class="form-control" placeholder="0" required name="nota" min="0" max="10" value="0" step="0.1" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" onblur="
+                                                    this.parentNode.parentNode.style.backgroundColor=/^\d+(?:\.\d{1,2})?$/.test(this.value)?"inherit":"red"
+                                                    ">
+                                                   
                                                 </div>
                                             </div>
                                             <div class="col-sm-12">
@@ -563,10 +591,10 @@ para los usuarios que ingresen al modulo docentes*/
                                                 <div class="col-sm-3">
                                                 <script>
                                                 $(document).ready(function(){
-                                                    $("#myInput'.$idEstudiante.'").val("'.$idEstudiante.'");
+                                                    $("#myInputf'.$idEstudiante.'").val("'.$idEstudiante.'");
                                                 });
                                                 </script>
-                                                <input type="hidden" name="idEst" id="myInput'.$idEstudiante.'">
+                                                <input type="hidden" name="idEst" id="myInputf'.$idEstudiante.'">
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <button type="submit" class="btn btn-primary" style="Width:100%;">Guardar</button>
@@ -580,33 +608,71 @@ para los usuarios que ingresen al modulo docentes*/
                                                         $("#myInput'.$idAvance.'").val("'.$idAvance.'");
                                                     });
                                                     </script>
-                                                    <input type="text" name="idAv" id="myInput'.$idAvance.'">
+                                                    <input type="hidden" name="idAv" id="myInput'.$idAvance.'">
                                                 </div>      
                                         </div>
                                     </form>
                                 </div>
                                 <div class="col-sm-12">
-                                    <table class="display table table-striped table-bordered" style="width:100%">
-                                        <thead>
-                                        <tr>
-                                            <th>Criterio</th>
-                                            <th>Nota</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    ';
-                                    foreach ($query4 as $currentUser) {   
-                                    echo'
-                                    <tr>           
-                                        <td>'. $currentUser['Criterio'] .'</td>
-                                        <td>'. $currentUser['notaPorcentaje'] .'</td>
-                                        </tr>     
+                                    <div class="col-sm-6">
+                                            <h5>Criterios Establecidos:</h5>
+                                            <table class="display table table-striped table-bordered" style="width:100%">
+                                                <thead>
+                                                <tr>
+                                                    <th>Criterio</th>
+                                                    <th>Nota</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            ';
+                                            foreach ($query5 as $currentUser) {   
+                                            echo'
+                                            <tr>           
+                                                <td>'. $currentUser['Criterio'] .'</td>
+                                                <td>'. $currentUser['Porcentaje'] .'%</td>
+                                                </tr>     
+                                                ';
+                                            }
+                                            echo'
+                                            <tbody>
+                                            <tfoot>
+                                                <tr>
+                                                <th>Total</th>
+                                                <th>100%</th>
+                                                </tr>
+                                            </tfoot> 
+                                            </table>
+                                        </div>    
+                                    <div class="col-sm-6">
+                                        <h5>Califiaciónes:</h5>
+                                        <table class="display table table-striped table-bordered" style="width:100%">
+                                            <thead>
+                                            <tr>
+                                                <th>Criterio</th>
+                                                <th>Nota</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                         ';
-                                    }
-                                    echo'
-                                       
-                                    <tbody> 
-                                    </table>
+                                        foreach ($query4 as $currentUser) {   
+                                        echo'
+                                        <tr>           
+                                            <td>'. $currentUser['Criterio'] .'</td>
+                                            <td>'. $currentUser['notaPorcentaje'] .'</td>
+                                            </tr>     
+                                            ';
+                                        }
+                                        echo'
+                                        
+                                        <tbody> 
+                                        <tfoot>
+                                                <tr>
+                                                <th>Total</th>
+                                                <th>/10</th>
+                                                </tr>
+                                            </tfoot> 
+                                        </table>
+                                    </div>    
                                 </div>
                                 <div class="col-sm-12">
                                 <table class="display table table-striped table-bordered" style="width:100%">
@@ -721,12 +787,20 @@ para los usuarios que ingresen al modulo docentes*/
                                     </div>
                                     <div class="col-sm-4">
                                         <h5>Editar nota (Opcional):</h5>
-                                        <input type="text" class="form-control" name="nota">
+                                        <input type="number" class="form-control" placeholder="0" required name="nota" min="0" max="10" value="0" step="0.1" title="Currency" pattern="^\d+(?:\.\d{1,2})?$" onblur="
+                                        this.parentNode.parentNode.style.backgroundColor=/^\d+(?:\.\d{1,2})?$/.test(this.value)?"inherit":"red"
+                                        ">
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                     <div class="col-sm-3">
+                                    <script>
+                                                $(document).ready(function(){
+                                                    $("#myInputl'.$CodEst.'").val("'.$CodEst.'");
+                                                });
+                                                </script>
+                                                <input type="hidden" name="codEstudiante" id="myInputl'.$CodEst.'">
                                     </div>
                                     <div class="col-sm-3">
                                         <button type="submit" class="btn btn-primary" style="Width:100%;">Guardar</button>
@@ -829,6 +903,7 @@ para los usuarios que ingresen al modulo docentes*/
                 <tbody> 
             </table>';
     }
+   
    
     //Funciones get para presentar en la aplciación
     public function getCriteriosD()

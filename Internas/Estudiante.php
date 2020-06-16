@@ -42,9 +42,7 @@ $user->SetCalificacionesE($userSession->getCurrentUser()); //Califiaciones
     });
 </script>
 </head>
-
 <body>
-
     <body class="home">
         <div class="container-fluid display-table">
             <div class="row display-table-row">
@@ -80,11 +78,6 @@ $user->SetCalificacionesE($userSession->getCurrentUser()); //Califiaciones
                                                 <li>
                                                     <div class="navbar-content">
                                                         <span><?php echo $user->getPNombre() . ' ' . $user->getPApellido() ?></span>
-
-                                                        <div class="divider">
-                                                        </div>
-                                                        <!-- Se muetsra un modal con un formulario para cambiar datos del perfil-->
-                                                        <a href="#" data-toggle="modal" data-target="#add_project">Editar perfil</a>
                                                     </div>
                                                 </li>
                                                 <div class="navbar-content">
@@ -92,7 +85,7 @@ $user->SetCalificacionesE($userSession->getCurrentUser()); //Califiaciones
                                                     <li class="tooltips-general exit-system-button" data-href="Database/logout.php" 
                                                     data-placement="bottom" title="Salir del sistema">
                                                     <a href="Database/logout.php">Salir</a>
-                                                        <i class="zmdi zmdi-power"></i>
+                                                        
                                                     </li>
                                                 </div>
                                             </ul>
@@ -163,19 +156,22 @@ $user->SetCalificacionesE($userSession->getCurrentUser()); //Califiaciones
                                             $objData = new  Database();
                                          
                                             if (isset($_POST['subir'])) {
-                                                //declare variables
-                                                $archivo= $_FILES['archivo']['tmp_name'];
-                                                $nombreArchivo = $_FILES['archivo']['name'];
-                                                $archivo = base64_encode(file_get_contents(addslashes($archivo)));
-                                                $sth1 = $objData->prepare("INSERT INTO `avances`(`nombreArchivo`, `Archivo`) 
-                                                VALUES ('$nombreArchivo','$archivo')");
+                                                $tmp_name = $_FILES["archivo"]["tmp_name"];
+                                                $nombreArchivo = $_FILES["archivo"]["name"];
+                                                move_uploaded_file($tmp_name, "C:/xampp/htdocs/UEFLD-Avances/assets/Archivos/$nombreArchivo");
+                                                //$archivo= $_FILES['archivo']['tmp_name'];
+                                               // $nombreArchivo = $_FILES['archivo']['name'];
+                                                //copy('$nombreArchivo', "C:/xampp/htdocs/UEFLD/Archivos/$nombreArchivo");
+                                                $sth1 = $objData->prepare("INSERT INTO avances(nombreArchivo, directorio) 
+                                                VALUES ('$nombreArchivo','C:/xampp/htdocs/UEFLD-Avances/assets/Archivos')");
                                                  $sth1->execute();
                                                  $sth2 = $objData->prepare('UPDATE avances 
                                                  SET Titulo = :titulo , Descripcion = :descripcion, Fecha =:fecha 
                                                  WHERE idAvance = (SELECT max(idAvance) FROM avances)');
                                                     $titulo= $_POST['titulo'];
                                                     $descripcion = $_POST['descripcion'];
-                                                    $fecha = $_POST['fecha'];
+                                                    $fecha = date('Y-m-d');
+                                                    
                                                     $sth2->bindParam(':titulo', $titulo);
                                                     $sth2->bindParam(':descripcion', $descripcion);
                                                     $sth2->bindParam(':fecha', $fecha);
@@ -197,7 +193,7 @@ $user->SetCalificacionesE($userSession->getCurrentUser()); //Califiaciones
                                                                 <div class="form-group">
                                                                     <label for="fecha" class="control-label col-sm-2">Fecha</label>
                                                                     <div class="col-sm-10">
-                                                                        <input type="date" class="form-control" name="fecha" id="fecha" placeholder="">
+                                                                        <input type="date" class="form-control" disabled name="fecha" id="fecha" value="<?php echo date('Y-m-d');?>">
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group">
@@ -261,98 +257,7 @@ $user->SetCalificacionesE($userSession->getCurrentUser()); //Califiaciones
             </div>
         </div>
 
-        <!-- Modal -->
-        <div id="add_project" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header login-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Editar Perfil</h4>
-                    </div>
-                    <div class="text-center">
-                        <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-circle img-thumbnail" alt="avatar">
-                        <h6>Upload a different photo...</h6>
-                        <input type="file" class="text-center center-block file-upload">
-                    </div>
-                    <div class="modal-body">
-                        <form class="form" action="##" method="post" id="registrationForm">
-                            <div class="form-group">
-                                <div class="col-xs-6">
-                                    <label for="first_name">
-                                        <h4>First name</h4>
-                                    </label>
-                                    <input type="text" class="form-control" name="first_name" id="first_name" placeholder="first name" title="enter your first name if any.">
-                                </div>
-                            </div>
-                            <div class="form-group">
-
-                                <div class="col-xs-6">
-                                    <label for="last_name">
-                                        <h4>Last name</h4>
-                                    </label>
-                                    <input type="text" class="form-control" name="last_name" id="last_name" placeholder="last name" title="enter your last name if any.">
-                                </div>
-                            </div>
-                            <div class="form-group">
-
-                                <div class="col-xs-6">
-                                    <label for="phone">
-                                        <h4>Phone</h4>
-                                    </label>
-                                    <input type="text" class="form-control" name="phone" id="phone" placeholder="enter phone" title="enter your phone number if any.">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-xs-6">
-                                    <label for="mobile">
-                                        <h4>Mobile</h4>
-                                    </label>
-                                    <input type="text" class="form-control" name="mobile" id="mobile" placeholder="enter mobile number" title="enter your mobile number if any.">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-xs-6">
-                                    <label for="email">
-                                        <h4>Email</h4>
-                                    </label>
-                                    <input type="email" class="form-control" name="email" id="email" placeholder="you@email.com" title="enter your email.">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-xs-6">
-                                    <label for="email">
-                                        <h4>Location</h4>
-                                    </label>
-                                    <input type="email" class="form-control" id="location" placeholder="somewhere" title="enter a location">
-                                </div>
-                            </div>
-                            <div class="form-group">
-
-                                <div class="col-xs-6">
-                                    <label for="password">
-                                        <h4>Password</h4>
-                                    </label>
-                                    <input type="password" class="form-control" name="password" id="password" placeholder="password" title="enter your password.">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-xs-6">
-                                    <label for="password2">
-                                        <h4>Verify</h4>
-                                    </label>
-                                    <input type="password" class="form-control" name="password2" id="password2" placeholder="password2" title="enter your password2.">
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="cancel" data-dismiss="modal">Cerrar</button>
-                        <button type="button" class="add-project" data-dismiss="modal">Guardar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
     </body>
     <script type="text/javascript">
         $(document).ready(function() {
