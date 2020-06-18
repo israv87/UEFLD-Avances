@@ -886,6 +886,7 @@ para los usuarios que ingresen al modulo docentes*/
                 </thead>
                 <tbody>';
         foreach ($query1 as $currentUser) {
+            $Crit = $currentUser['Criterio'];
             echo '
                     <tr>
                         <td>' . $currentUser['Criterio'] . '</td>
@@ -893,7 +894,13 @@ para los usuarios que ingresen al modulo docentes*/
                         <td>' . $currentUser['Porcentaje'] . '</td>
                         <td><form name="frmDelete" action="Database/SQL/BorrarCriterio.php" method="post">
                                 <input class="btn btn-danger" type="submit" name="dlteBtn" value="borrar">
+                                <script>
+                                    $(document).ready(function(){
+                                    $("#myInputlo'.$Crit.'").val("'.$Crit.'");});
+                                </script>
+                                <input type="hidden" name="crt" id="myInputlo'.$Crit.'">
                                 <input type="hidden" name="itemid" value=';{ echo ''. $currentUser['idCriterio'].'';}echo'>
+
                             </form>
                         </td>
                     </tr>

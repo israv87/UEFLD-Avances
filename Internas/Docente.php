@@ -165,10 +165,10 @@ $user->SetNCalificacionesD($userSession->getCurrentUser()); //Numero de califica
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" href="#collapse1">Nuevo criterio para evaluación</a>
+                                        <a data-toggle="collapse" href="#collapse1202020"> <button type="button" class="btn btn-success">Nuevo criterio para evaluación</button></a>
                                     </h4>
                                 </div>
-                                <div id="collapse1" class="panel-collapse collapse">
+                                <div id="collapse1202020" class="panel-collapse collapse">
                                     <ul class="list-group">
                                         <li class="list-group-item">
 
